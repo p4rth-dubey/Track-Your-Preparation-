@@ -91,3 +91,12 @@ Sora and Inter load from Google Fonts. Without internet, the page falls back to 
  
 React 18, React Router 6 (HashRouter), Vite 5, plain CSS, and a canvas-based 3D background with no extra libraries.
 
+## Contributors
+
+<table>
+<tr>
+<td align="center" width="200">
+<a href="https://github.com/p4rth-dubey"><img src="https://avatars.githubusercontent.com/u/342480038?s=60&v=4" width="100" height="100" alt="Parth" loading="lazy" style="border-radius:50%" /><br/><b>Parth Veer Dubey</b></a><br/>Owner & Maintainer
+</td>
+</tr>
+</table>
