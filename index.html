@@ -1,15 +1,1592 @@
 <!doctype html>
 <html lang="en">
   <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <meta name="theme-color" content="#05060d" />
+    <meta charset="utf-8" />
+    <meta
+      name="viewport"
+      content="width=device-width, initial-scale=1, viewport-fit=cover"
+    />
+    <title>StudyOS Focus</title>
     <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Sora:wght@500;600;700&display=swap" rel="stylesheet" />
-    <title>Class 10 Planner</title>
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Bricolage+Grotesque:opsz,wght@12..96,500;12..96,800&family=Figtree:wght@400;500;600&display=swap"
+      rel="stylesheet"
+    />
+    <style>
+      :root {
+        --bg: #eaeefb;
+        --bg2: #d9e0f7;
+        --ink: #141a3a;
+        --ink2: #4b5483;
+        --panel: rgba(255, 255, 255, 0.62);
+        --line: rgba(20, 26, 58, 0.14);
+        --focus: #d9480f;
+        --break: #0f8f7e;
+        --accent: #d9480f;
+        --scene-a: #3b4bd8;
+        --scene-b: #c2410c;
+        --head: "Bricolage Grotesque", "Segoe UI", system-ui, sans-serif;
+        --body: "Figtree", "Segoe UI", system-ui, sans-serif;
+        box-sizing: border-box;
+        padding-top: env(safe-area-inset-top, 0px);
+        padding-bottom: env(safe-area-inset-bottom, 0px);
+      }
+      @media (prefers-color-scheme: dark) {
+        :root:not([data-theme="light"]) {
+          --bg: #0a1030;
+          --bg2: #141c4a;
+          --ink: #f1eee4;
+          --ink2: #a9b1d8;
+          --panel: rgba(14, 20, 56, 0.58);
+          --line: rgba(241, 238, 228, 0.16);
+          --focus: #ffb454;
+          --break: #5eead4;
+          --accent: #ffb454;
+          --scene-a: #7c8cff;
+          --scene-b: #ffb454;
+        }
+      }
+      :root[data-theme="dark"] {
+        --bg: #0a1030;
+        --bg2: #141c4a;
+        --ink: #f1eee4;
+        --ink2: #a9b1d8;
+        --panel: rgba(14, 20, 56, 0.58);
+        --line: rgba(241, 238, 228, 0.16);
+        --focus: #ffb454;
+        --break: #5eead4;
+        --accent: #ffb454;
+        --scene-a: #7c8cff;
+        --scene-b: #ffb454;
+      }
+      *,
+      *::before,
+      *::after {
+        box-sizing: inherit;
+      }
+      html {
+        scroll-padding-top: env(safe-area-inset-top, 0px);
+      }
+      body {
+        margin: 0;
+        min-height: 100vh;
+        color: var(--ink);
+        font-family: var(--body);
+        background: radial-gradient(
+          1200px 800px at 20% 10%,
+          var(--bg2),
+          var(--bg) 60%
+        );
+        background-color: var(--bg);
+        transition: background-color 0.4s;
+      }
+      #scene {
+        position: fixed;
+        inset: 0;
+        width: 100%;
+        height: 100%;
+        z-index: 0;
+        display: block;
+      }
+      .app {
+        position: relative;
+        z-index: 1;
+        max-width: 1120px;
+        margin: 0 auto;
+        padding: 20px 20px 60px;
+      }
+      header {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        gap: 12px;
+        flex-wrap: wrap;
+        margin-bottom: 22px;
+      }
+      .brand {
+        font-family: var(--head);
+        font-weight: 800;
+        font-size: 1.35rem;
+        letter-spacing: -0.02em;
+      }
+      .brand small {
+        display: block;
+        font-family: var(--body);
+        font-weight: 500;
+        font-size: 0.8rem;
+        color: var(--ink2);
+        letter-spacing: 0;
+      }
+      .tools {
+        display: flex;
+        gap: 10px;
+        align-items: center;
+        flex-wrap: wrap;
+      }
+      .seg {
+        display: inline-flex;
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 999px;
+        padding: 3px;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      .seg button {
+        border: 0;
+        background: transparent;
+        color: var(--ink2);
+        font: 500 0.88rem var(--body);
+        padding: 7px 14px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition:
+          background 0.25s,
+          color 0.25s;
+      }
+      .seg button[aria-pressed="true"] {
+        background: var(--accent);
+        color: #10132b;
+      }
+      .icon-btn {
+        width: 38px;
+        height: 38px;
+        border-radius: 50%;
+        border: 1px solid var(--line);
+        background: var(--panel);
+        color: var(--ink);
+        cursor: pointer;
+        font-size: 1rem;
+        backdrop-filter: blur(10px);
+        -webkit-backdrop-filter: blur(10px);
+      }
+      button:focus-visible,
+      input:focus-visible {
+        outline: 2px solid var(--accent);
+        outline-offset: 2px;
+      }
+
+      .grid {
+        display: grid;
+        grid-template-columns: minmax(0, 1.25fr) minmax(0, 1fr);
+        gap: 20px;
+      }
+      @media (max-width: 860px) {
+        .grid {
+          grid-template-columns: 1fr;
+        }
+      }
+      .panel {
+        background: var(--panel);
+        border: 1px solid var(--line);
+        border-radius: 22px;
+        padding: 24px;
+        backdrop-filter: blur(14px);
+        -webkit-backdrop-filter: blur(14px);
+      }
+      .panel h2 {
+        font-family: var(--head);
+        font-weight: 800;
+        font-size: 1.05rem;
+        margin: 0 0 14px;
+        letter-spacing: -0.01em;
+      }
+
+      .modes {
+        display: flex;
+        justify-content: center;
+        margin-bottom: 18px;
+      }
+      .dial {
+        position: relative;
+        width: min(320px, 78vw);
+        aspect-ratio: 1;
+        margin: 0 auto;
+      }
+      .dial svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .dial .track {
+        stroke: var(--line);
+      }
+      .dial .prog {
+        stroke: var(--accent);
+        stroke-linecap: round;
+        transition: stroke 0.5s;
+      }
+      .dial .tick {
+        stroke: var(--ink2);
+        opacity: 0.35;
+      }
+      .readout {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        text-align: center;
+      }
+      .time {
+        font-family: var(--head);
+        font-weight: 800;
+        font-size: clamp(3rem, 13vw, 4.6rem);
+        letter-spacing: -0.04em;
+        font-variant-numeric: tabular-nums;
+        line-height: 1;
+      }
+      .state {
+        color: var(--ink2);
+        margin-top: 8px;
+        font-size: 0.95rem;
+      }
+      .dial.running .prog {
+        filter: drop-shadow(0 0 8px var(--accent));
+      }
+      .dial.breathing {
+        animation: breathe 5s ease-in-out infinite;
+      }
+      @keyframes breathe {
+        50% {
+          transform: scale(1.035);
+        }
+      }
+      .dots {
+        display: flex;
+        gap: 8px;
+        justify-content: center;
+        margin: 18px 0 6px;
+      }
+      .dots i {
+        width: 11px;
+        height: 11px;
+        border-radius: 50%;
+        border: 2px solid var(--ink2);
+        transition:
+          background 0.4s,
+          border-color 0.4s,
+          transform 0.4s;
+      }
+      .dots i.done {
+        background: var(--accent);
+        border-color: var(--accent);
+        transform: scale(1.15);
+      }
+      .cycle-note {
+        text-align: center;
+        color: var(--ink2);
+        font-size: 0.85rem;
+        margin-bottom: 16px;
+      }
+      .controls {
+        display: flex;
+        gap: 12px;
+        justify-content: center;
+        margin-bottom: 20px;
+      }
+      .btn {
+        font: 600 1rem var(--body);
+        border-radius: 14px;
+        border: 1px solid var(--line);
+        padding: 13px 22px;
+        cursor: pointer;
+        background: transparent;
+        color: var(--ink);
+        transition:
+          transform 0.15s,
+          background 0.25s;
+      }
+      .btn:active {
+        transform: scale(0.96);
+      }
+      .btn.main {
+        background: var(--accent);
+        color: #10132b;
+        border-color: transparent;
+        min-width: 140px;
+      }
+      .row {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        justify-content: center;
+        margin-bottom: 14px;
+      }
+      .chip {
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink2);
+        font: 500 0.86rem var(--body);
+        padding: 7px 13px;
+        border-radius: 999px;
+        cursor: pointer;
+        transition: all 0.25s;
+      }
+      .chip[aria-pressed="true"] {
+        border-color: var(--accent);
+        color: var(--ink);
+        background: color-mix(in srgb, var(--accent) 18%, transparent);
+      }
+      .task {
+        width: 100%;
+        font: 500 1rem var(--body);
+        color: var(--ink);
+        background: transparent;
+        border: 1px solid var(--line);
+        border-radius: 12px;
+        padding: 12px 14px;
+      }
+      .task::placeholder {
+        color: var(--ink2);
+      }
+
+      .stats-top {
+        display: flex;
+        align-items: center;
+        gap: 18px;
+        margin-bottom: 20px;
+      }
+      .goal {
+        position: relative;
+        width: 104px;
+        height: 104px;
+        flex: none;
+      }
+      .goal svg {
+        width: 100%;
+        height: 100%;
+        transform: rotate(-90deg);
+      }
+      .goal b {
+        position: absolute;
+        inset: 0;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: center;
+        font-family: var(--head);
+        font-size: 1.4rem;
+        line-height: 1;
+      }
+      .goal b span {
+        font: 500 0.72rem var(--body);
+        color: var(--ink2);
+        margin-top: 3px;
+      }
+      .kv {
+        display: grid;
+        grid-template-columns: 1fr 1fr;
+        gap: 12px;
+        flex: 1;
+      }
+      .kv div {
+        font-size: 0.8rem;
+        color: var(--ink2);
+      }
+      .kv strong {
+        display: block;
+        font-family: var(--head);
+        font-size: 1.5rem;
+        color: var(--ink);
+        line-height: 1.1;
+      }
+      .week {
+        display: flex;
+        align-items: flex-end;
+        gap: 8px;
+        height: 110px;
+        margin-bottom: 6px;
+      }
+      .week div {
+        flex: 1;
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        justify-content: flex-end;
+        height: 100%;
+        gap: 6px;
+        font-size: 0.72rem;
+        color: var(--ink2);
+      }
+      .week span {
+        width: 100%;
+        max-width: 34px;
+        border-radius: 8px 8px 3px 3px;
+        background: var(--scene-a);
+        opacity: 0.85;
+        min-height: 3px;
+        transition: height 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .week div.today span {
+        background: var(--accent);
+        opacity: 1;
+      }
+      .subj {
+        margin-top: 18px;
+        display: grid;
+        gap: 9px;
+      }
+      .subj p {
+        margin: 0;
+        display: grid;
+        grid-template-columns: 70px 1fr 46px;
+        align-items: center;
+        gap: 10px;
+        font-size: 0.86rem;
+      }
+      .subj i {
+        display: block;
+        height: 8px;
+        border-radius: 5px;
+        background: var(--line);
+        overflow: hidden;
+      }
+      .subj i b {
+        display: block;
+        height: 100%;
+        width: 0;
+        background: var(--accent);
+        border-radius: 5px;
+        transition: width 0.8s cubic-bezier(0.2, 0.8, 0.2, 1);
+      }
+      .subj em {
+        font-style: normal;
+        color: var(--ink2);
+        text-align: right;
+      }
+      .settings {
+        margin-top: 18px;
+        border-top: 1px solid var(--line);
+        padding-top: 16px;
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 10px 16px;
+      }
+      .step {
+        display: flex;
+        align-items: center;
+        justify-content: space-between;
+        font-size: 0.86rem;
+        color: var(--ink2);
+      }
+      .step div {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        color: var(--ink);
+      }
+      .step button {
+        width: 26px;
+        height: 26px;
+        border-radius: 8px;
+        border: 1px solid var(--line);
+        background: transparent;
+        color: var(--ink);
+        cursor: pointer;
+      }
+      .step span {
+        min-width: 34px;
+        text-align: center;
+        font-variant-numeric: tabular-nums;
+      }
+      .toggle {
+        grid-column: 1/-1;
+        display: flex;
+        gap: 8px;
+        align-items: center;
+        font-size: 0.86rem;
+        color: var(--ink2);
+      }
+      .hint {
+        margin-top: 18px;
+        color: var(--ink2);
+        font-size: 0.8rem;
+        text-align: center;
+      }
+      #fx {
+        position: fixed;
+        inset: 0;
+        z-index: 5;
+        pointer-events: none;
+        width: 100%;
+        height: 100%;
+      }
+      .toast {
+        position: fixed;
+        left: 50%;
+        bottom: calc(24px + env(safe-area-inset-bottom, 0px));
+        transform: translate(-50%, 30px);
+        opacity: 0;
+        background: var(--ink);
+        color: var(--bg);
+        padding: 12px 18px;
+        border-radius: 14px;
+        font-weight: 600;
+        z-index: 6;
+        transition: all 0.45s cubic-bezier(0.2, 0.8, 0.2, 1);
+        max-width: 90vw;
+        text-align: center;
+      }
+      .toast.show {
+        opacity: 1;
+        transform: translate(-50%, 0);
+      }
+      @media (prefers-reduced-motion: reduce) {
+        .dial.breathing {
+          animation: none;
+        }
+        * {
+          transition-duration: 0.01s !important;
+        }
+      }
+    </style>
   </head>
   <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.jsx"></script>
+    <canvas id="scene" aria-hidden="true"></canvas>
+    <canvas id="fx" aria-hidden="true"></canvas>
+
+    <div class="app">
+      <header>
+        <div class="brand">
+          StudyOS Focus<small
+            >Study in focused rounds, rest between them.</small
+          >
+        </div>
+        <div class="tools">
+          <div class="seg" role="group" aria-label="Background theme">
+            <button data-scene="science" aria-pressed="false">Science</button>
+            <button data-scene="math" aria-pressed="false">Maths</button>
+            <button data-scene="both" aria-pressed="true">Social Science</button>
+          </div>
+          <button
+            class="icon-btn"
+            id="themeBtn"
+            aria-label="Switch light or dark theme"
+          >
+            ◐
+          </button>
+        </div>
+      </header>
+
+      <div class="grid">
+        <section class="panel" aria-label="Timer">
+          <div class="modes">
+            <div class="seg" role="group" aria-label="Timer mode">
+              <button data-mode="focus" aria-pressed="true">Focus</button>
+              <button data-mode="short" aria-pressed="false">
+                Short break
+              </button>
+              <button data-mode="long" aria-pressed="false">Long break</button>
+            </div>
+          </div>
+
+          <div class="dial" id="dial">
+            <svg viewBox="0 0 280 280" aria-hidden="true">
+              <g id="ticks"></g>
+              <circle
+                class="track"
+                cx="140"
+                cy="140"
+                r="120"
+                fill="none"
+                stroke-width="10"
+              />
+              <circle
+                class="prog"
+                id="prog"
+                cx="140"
+                cy="140"
+                r="120"
+                fill="none"
+                stroke-width="10"
+                stroke-dasharray="753.98"
+                stroke-dashoffset="753.98"
+              />
+            </svg>
+            <div class="readout">
+              <div class="time" id="time" role="timer" aria-live="off">
+                25:00
+              </div>
+              <div class="state" id="state">Ready to focus</div>
+            </div>
+          </div>
+
+          <div class="dots" id="dots" aria-hidden="true">
+            <i></i><i></i><i></i><i></i>
+          </div>
+          <div class="cycle-note" id="cycleNote">
+            4 focus rounds earn a long break
+          </div>
+
+          <div class="controls">
+            <button class="btn main" id="startBtn">Start focus</button>
+            <button class="btn" id="resetBtn">Reset</button>
+            <button class="btn" id="skipBtn">Skip</button>
+          </div>
+
+          <div
+            class="row"
+            id="subjects"
+            role="group"
+            aria-label="Subject"
+          ></div>
+          <input
+            class="task"
+            id="task"
+            type="text"
+            maxlength="80"
+            placeholder="What are you studying? e.g. Quadratic equations, Ex 4.2"
+          />
+          <div class="hint">Space starts or pauses. R resets.</div>
+        </section>
+
+        <section class="panel" aria-label="Progress">
+          <h2>Today</h2>
+          <div class="stats-top">
+            <div class="goal">
+              <svg viewBox="0 0 100 100" aria-hidden="true">
+                <circle
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  fill="none"
+                  stroke="var(--line)"
+                  stroke-width="9"
+                />
+                <circle
+                  id="goalArc"
+                  cx="50"
+                  cy="50"
+                  r="42"
+                  fill="none"
+                  stroke="var(--accent)"
+                  stroke-width="9"
+                  stroke-linecap="round"
+                  stroke-dasharray="263.9"
+                  stroke-dashoffset="263.9"
+                  style="
+                    transition: stroke-dashoffset 0.9s
+                      cubic-bezier(0.2, 0.8, 0.2, 1);
+                  "
+                />
+              </svg>
+              <b
+                ><span
+                  id="goalPct"
+                  style="
+                    font: 800 1.4rem var(--head);
+                    color: var(--ink);
+                    margin: 0;
+                  "
+                  >0%</span
+                ><span>of goal</span></b
+              >
+            </div>
+            <div class="kv">
+              <div><strong id="sMin">0</strong>minutes focused</div>
+              <div><strong id="sRounds">0</strong>rounds done</div>
+              <div><strong id="sStreak">0</strong>day streak</div>
+              <div><strong id="sWeek">0</strong>minutes this week</div>
+            </div>
+          </div>
+
+          <h2>Last 7 days</h2>
+          <div class="week" id="week"></div>
+
+          <div class="subj" id="subjBars"></div>
+
+          <div class="settings" id="settings"></div>
+        </section>
+      </div>
+    </div>
+    <div class="toast" id="toast" role="status"></div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script>
+      /* ============ Storage helpers ============ */
+      const store = {
+        get(k, d) {
+          try {
+            const v = localStorage.getItem(k);
+            return v ? JSON.parse(v) : d;
+          } catch (e) {
+            return d;
+          }
+        },
+        set(k, v) {
+          try {
+            localStorage.setItem(k, JSON.stringify(v));
+          } catch (e) {}
+        },
+      };
+      const $ = (s) => document.querySelector(s);
+      const $$ = (s) => [...document.querySelectorAll(s)];
+      const reduceMotion = matchMedia(
+        "(prefers-reduced-motion: reduce)",
+      ).matches;
+
+      /* ============ State ============ */
+      const SUBJECTS = ["Maths", "Science", "SST", "English", "Hindi", "Other"];
+      let settings = Object.assign(
+        {
+          focus: 25,
+          short: 5,
+          long: 15,
+          goal: 120,
+          auto: false,
+          scene: "both",
+          theme: "auto",
+          subject: "Maths",
+        },
+        store.get("pt_settings", {}),
+      );
+      let log = store.get("pt_log", {}); // { 'YYYY-MM-DD': { min, rounds, subj:{Maths:min} } }
+      let T = {
+        mode: "focus",
+        running: false,
+        endAt: 0,
+        remaining: settings.focus * 60000,
+        cycle: store.get("pt_cycle", 0) % 4,
+        timer: null,
+      };
+
+      const dayKey = (d = new Date()) =>
+        d.getFullYear() +
+        "-" +
+        String(d.getMonth() + 1).padStart(2, "0") +
+        "-" +
+        String(d.getDate()).padStart(2, "0");
+      const total = () => settings[T.mode] * 60000;
+      const saveSettings = () => store.set("pt_settings", settings);
+
+      /* ============ Timer ============ */
+      const C = 2 * Math.PI * 120;
+      function fmt(ms) {
+        const s = Math.max(0, Math.ceil(ms / 1000));
+        return (
+          String(Math.floor(s / 60)).padStart(2, "0") +
+          ":" +
+          String(s % 60).padStart(2, "0")
+        );
+      }
+      const MODE_NAME = {
+        focus: "Focus",
+        short: "Short break",
+        long: "Long break",
+      };
+
+      function render() {
+        const progress = 1 - T.remaining / total();
+        $("#prog").style.strokeDashoffset = C * (1 - progress);
+        $("#time").textContent = fmt(T.remaining);
+        const isFocus = T.mode === "focus";
+        $("#state").textContent = T.running
+          ? isFocus
+            ? "Stay with it"
+            : "Rest your eyes"
+          : T.remaining < total()
+            ? "Paused"
+            : isFocus
+              ? "Ready to focus"
+              : "Take a break";
+        $("#startBtn").textContent = T.running
+          ? "Pause"
+          : T.remaining < total()
+            ? "Resume"
+            : isFocus
+              ? "Start focus"
+              : "Start break";
+        $("#dial").classList.toggle("running", T.running);
+        $("#dial").classList.toggle(
+          "breathing",
+          T.running && !isFocus && !reduceMotion,
+        );
+        $$("[data-mode]").forEach((b) =>
+          b.setAttribute("aria-pressed", b.dataset.mode === T.mode),
+        );
+        document.documentElement.style.setProperty(
+          "--accent",
+          isFocus ? "var(--focus)" : "var(--break)",
+        );
+        $$("#dots i").forEach((d, i) =>
+          d.classList.toggle("done", i < T.cycle),
+        );
+        const left = 4 - T.cycle;
+        $("#cycleNote").textContent =
+          left === 4
+            ? "4 focus rounds earn a long break"
+            : left +
+              " more focus round" +
+              (left > 1 ? "s" : "") +
+              " until a long break";
+        document.title = T.running
+          ? fmt(T.remaining) + " · " + MODE_NAME[T.mode]
+          : "PrepTrack Focus";
+        if (window.__scene) window.__scene.setMode(isFocus, T.running);
+      }
+
+      function tick() {
+        T.remaining = T.endAt - Date.now();
+        if (T.remaining <= 0) {
+          T.remaining = 0;
+          complete();
+          return;
+        }
+        render();
+      }
+      function start() {
+        if (T.running) return;
+        askNotify();
+        T.running = true;
+        T.endAt = Date.now() + T.remaining;
+        T.timer = setInterval(tick, 250);
+        render();
+      }
+      function pause() {
+        if (!T.running) return;
+        clearInterval(T.timer);
+        T.running = false;
+        T.remaining = T.endAt - Date.now();
+        render();
+      }
+      function setMode(m) {
+        clearInterval(T.timer);
+        T.running = false;
+        T.mode = m;
+        T.remaining = total();
+        render();
+      }
+      function reset() {
+        clearInterval(T.timer);
+        T.running = false;
+        T.remaining = total();
+        render();
+      }
+
+      function complete() {
+        clearInterval(T.timer);
+        T.running = false;
+        const wasFocus = T.mode === "focus";
+        if (wasFocus) {
+          record(settings.focus);
+          T.cycle++;
+          celebrate();
+          toast(
+            "Round done. " +
+              settings.focus +
+              " minutes of " +
+              settings.subject +
+              " logged.",
+          );
+        } else {
+          toast("Break over. Ready for the next round?");
+        }
+        beep();
+        notify(
+          wasFocus ? "Focus round complete" : "Break is over",
+          wasFocus ? "Time to rest." : "Back to studying.",
+        );
+        let next = "focus";
+        if (wasFocus) {
+          if (T.cycle >= 4) {
+            next = "long";
+            T.cycle = 0;
+          } else next = "short";
+        }
+        store.set("pt_cycle", T.cycle);
+        T.mode = next;
+        T.remaining = total();
+        render();
+        renderStats();
+        if (settings.auto) start();
+      }
+
+      function record(min) {
+        const k = dayKey();
+        const d = log[k] || { min: 0, rounds: 0, subj: {} };
+        d.min += min;
+        d.rounds += 1;
+        d.subj[settings.subject] = (d.subj[settings.subject] || 0) + min;
+        log[k] = d;
+        store.set("pt_log", log);
+      }
+
+      /* ============ Sound, notifications, toast ============ */
+      let ac;
+      function beep() {
+        try {
+          ac = ac || new (window.AudioContext || window.webkitAudioContext)();
+          [660, 880, 1100].forEach((f, i) => {
+            const o = ac.createOscillator(),
+              g = ac.createGain();
+            o.type = "sine";
+            o.frequency.value = f;
+            const t = ac.currentTime + i * 0.18;
+            g.gain.setValueAtTime(0, t);
+            g.gain.linearRampToValueAtTime(0.18, t + 0.03);
+            g.gain.exponentialRampToValueAtTime(0.001, t + 0.35);
+            o.connect(g);
+            g.connect(ac.destination);
+            o.start(t);
+            o.stop(t + 0.4);
+          });
+        } catch (e) {}
+      }
+      function askNotify() {
+        try {
+          if ("Notification" in window && Notification.permission === "default")
+            Notification.requestPermission();
+        } catch (e) {}
+      }
+      function notify(t, b) {
+        try {
+          if (
+            "Notification" in window &&
+            Notification.permission === "granted" &&
+            document.hidden
+          )
+            new Notification(t, { body: b });
+        } catch (e) {}
+      }
+      let toastT;
+      function toast(m) {
+        const el = $("#toast");
+        el.textContent = m;
+        el.classList.add("show");
+        clearTimeout(toastT);
+        toastT = setTimeout(() => el.classList.remove("show"), 4200);
+      }
+
+      /* ============ Confetti of symbols ============ */
+      const fx = $("#fx"),
+        fctx = fx.getContext("2d");
+      let parts = [],
+        fxRun = false;
+      function sizeFx() {
+        fx.width = innerWidth * devicePixelRatio;
+        fx.height = innerHeight * devicePixelRatio;
+      }
+      addEventListener("resize", sizeFx);
+      sizeFx();
+      function celebrate() {
+        if (reduceMotion) return;
+        const syms = [
+          "π",
+          "∑",
+          "∞",
+          "√",
+          "∫",
+          "Δ",
+          "θ",
+          "⚛",
+          "✓",
+          "e",
+          "H₂O",
+          "x²",
+        ];
+        const r = $("#dial").getBoundingClientRect();
+        const cx = (r.left + r.width / 2) * devicePixelRatio,
+          cy = (r.top + r.height / 2) * devicePixelRatio;
+        for (let i = 0; i < 46; i++) {
+          const a = Math.random() * Math.PI * 2,
+            v = (4 + Math.random() * 9) * devicePixelRatio;
+          parts.push({
+            x: cx,
+            y: cy,
+            vx: Math.cos(a) * v,
+            vy: Math.sin(a) * v - 4 * devicePixelRatio,
+            s: (16 + Math.random() * 20) * devicePixelRatio,
+            t: syms[i % syms.length],
+            life: 1,
+            rot: Math.random() * 6,
+            vr: (Math.random() - 0.5) * 0.2,
+            c: i % 2 ? "--focus" : "--break",
+          });
+        }
+        if (!fxRun) {
+          fxRun = true;
+          requestAnimationFrame(fxLoop);
+        }
+      }
+      function fxLoop() {
+        fctx.clearRect(0, 0, fx.width, fx.height);
+        const cs = getComputedStyle(document.documentElement);
+        parts.forEach((p) => {
+          p.x += p.vx;
+          p.y += p.vy;
+          p.vy += 0.28 * devicePixelRatio;
+          p.vx *= 0.992;
+          p.life -= 0.011;
+          p.rot += p.vr;
+          fctx.save();
+          fctx.globalAlpha = Math.max(p.life, 0);
+          fctx.translate(p.x, p.y);
+          fctx.rotate(p.rot);
+          fctx.fillStyle = cs.getPropertyValue(p.c).trim() || "#fff";
+          fctx.font = "700 " + p.s + "px Bricolage Grotesque, serif";
+          fctx.textAlign = "center";
+          fctx.fillText(p.t, 0, 0);
+          fctx.restore();
+        });
+        parts = parts.filter((p) => p.life > 0);
+        if (parts.length) requestAnimationFrame(fxLoop);
+        else {
+          fxRun = false;
+          fctx.clearRect(0, 0, fx.width, fx.height);
+        }
+      }
+
+      /* ============ Stats ============ */
+      function renderStats() {
+        const today = log[dayKey()] || { min: 0, rounds: 0, subj: {} };
+        $("#sMin").textContent = today.min;
+        $("#sRounds").textContent = today.rounds;
+        const pct = Math.min(
+          100,
+          Math.round((today.min / settings.goal) * 100),
+        );
+        $("#goalPct").textContent = pct + "%";
+        $("#goalArc").style.strokeDashoffset = 263.9 * (1 - pct / 100);
+        // week + streak
+        const days = [];
+        let weekMin = 0;
+        for (let i = 6; i >= 0; i--) {
+          const d = new Date();
+          d.setDate(d.getDate() - i);
+          const e = log[dayKey(d)];
+          days.push({ d, min: e ? e.min : 0 });
+          weekMin += e ? e.min : 0;
+        }
+        $("#sWeek").textContent = weekMin;
+        let streak = 0;
+        const d = new Date();
+        if (!(log[dayKey(d)] && log[dayKey(d)].min)) d.setDate(d.getDate() - 1);
+        while (log[dayKey(d)] && log[dayKey(d)].min > 0) {
+          streak++;
+          d.setDate(d.getDate() - 1);
+        }
+        $("#sStreak").textContent = streak;
+        const mx = Math.max(settings.goal, ...days.map((x) => x.min));
+        $("#week").innerHTML = days
+          .map(
+            (x, i) =>
+              `<div class="${i === 6 ? "today" : ""}" title="${x.min} min"><span style="height:0" data-h="${Math.round((x.min / mx) * 100)}"></span>${x.d.toLocaleDateString("en", { weekday: "short" })}</div>`,
+          )
+          .join("");
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() =>
+            $$("#week span").forEach(
+              (s) => (s.style.height = s.dataset.h + "%"),
+            ),
+          ),
+        );
+        // subject bars this week
+        const sub = {};
+        days.forEach((x) => {
+          const e = log[dayKey(x.d)];
+          if (e) for (const k in e.subj) sub[k] = (sub[k] || 0) + e.subj[k];
+        });
+        const smax = Math.max(1, ...Object.values(sub));
+        $("#subjBars").innerHTML =
+          SUBJECTS.filter((s) => sub[s])
+            .map(
+              (s) =>
+                `<p><span>${s}</span><i><b style="width:0" data-w="${Math.round((sub[s] / smax) * 100)}"></b></i><em>${sub[s]}m</em></p>`,
+            )
+            .join("") ||
+          '<p style="display:block;color:var(--ink2)">Finish a focus round to see your subject split.</p>';
+        requestAnimationFrame(() =>
+          requestAnimationFrame(() =>
+            $$("#subjBars b").forEach(
+              (b) => (b.style.width = b.dataset.w + "%"),
+            ),
+          ),
+        );
+      }
+
+      /* ============ UI wiring ============ */
+      $("#subjects").innerHTML = SUBJECTS.map(
+        (s) =>
+          `<button class="chip" data-subj="${s}" aria-pressed="${s === settings.subject}">${s}</button>`,
+      ).join("");
+      $("#subjects").addEventListener("click", (e) => {
+        const b = e.target.closest("[data-subj]");
+        if (!b) return;
+        settings.subject = b.dataset.subj;
+        saveSettings();
+        $$("[data-subj]").forEach((x) =>
+          x.setAttribute("aria-pressed", x === b),
+        );
+      });
+      $("#startBtn").onclick = () => (T.running ? pause() : start());
+      $("#resetBtn").onclick = reset;
+      $("#skipBtn").onclick = () => {
+        clearInterval(T.timer);
+        T.running = false;
+        const n =
+          T.mode === "focus" ? (T.cycle >= 3 ? "long" : "short") : "focus";
+        setMode(n);
+      };
+      $$("[data-mode]").forEach(
+        (b) => (b.onclick = () => setMode(b.dataset.mode)),
+      );
+      $("#task").value = store.get("pt_task", "");
+      $("#task").oninput = (e) => store.set("pt_task", e.target.value);
+      addEventListener("keydown", (e) => {
+        if (e.target.tagName === "INPUT") return;
+        if (e.code === "Space") {
+          e.preventDefault();
+          T.running ? pause() : start();
+        }
+        if (e.key === "r" || e.key === "R") reset();
+      });
+      // ticks
+      $("#ticks").innerHTML = Array.from({ length: 60 }, (_, i) => {
+        const a = (i * 6 * Math.PI) / 180,
+          r1 = i % 5 ? 129 : 127,
+          r2 = 134;
+        return `<line class="tick" x1="${140 + r1 * Math.cos(a)}" y1="${140 + r1 * Math.sin(a)}" x2="${140 + r2 * Math.cos(a)}" y2="${140 + r2 * Math.sin(a)}" stroke-width="${i % 5 ? 1 : 2}"/>`;
+      }).join("");
+
+      // settings steppers
+      const STEPS = [
+        ["focus", "Focus (min)", 5, 60, 5],
+        ["short", "Short break", 1, 15, 1],
+        ["long", "Long break", 5, 30, 5],
+        ["goal", "Daily goal (min)", 30, 480, 30],
+      ];
+      function renderSettings() {
+        $("#settings").innerHTML =
+          STEPS.map(
+            ([k, l]) =>
+              `<div class="step"><label>${l}</label><div><button data-k="${k}" data-d="-1" aria-label="Decrease ${l}">−</button><span>${settings[k]}</span><button data-k="${k}" data-d="1" aria-label="Increase ${l}">+</button></div></div>`,
+          ).join("") +
+          `<label class="toggle"><input type="checkbox" id="auto" ${settings.auto ? "checked" : ""}> Start the next round automatically</label>`;
+        $("#auto").onchange = (e) => {
+          settings.auto = e.target.checked;
+          saveSettings();
+        };
+      }
+      $("#settings").addEventListener("click", (e) => {
+        const b = e.target.closest("button[data-k]");
+        if (!b) return;
+        const [k, , mn, mx, st] = STEPS.find((s) => s[0] === b.dataset.k);
+        settings[k] = Math.min(
+          mx,
+          Math.max(mn, settings[k] + st * Number(b.dataset.d)),
+        );
+        saveSettings();
+        renderSettings();
+        if (!T.running && k !== "goal") {
+          T.remaining = total();
+        }
+        render();
+        renderStats();
+      });
+
+      // scene toggle + theme
+      function applyScene() {
+        $$("[data-scene]").forEach((b) =>
+          b.setAttribute("aria-pressed", b.dataset.scene === settings.scene),
+        );
+        if (window.__scene) window.__scene.setKind(settings.scene);
+      }
+      $$("[data-scene]").forEach(
+        (b) =>
+          (b.onclick = () => {
+            settings.scene = b.dataset.scene;
+            saveSettings();
+            applyScene();
+          }),
+      );
+      function applyTheme() {
+        const r = document.documentElement;
+        if (settings.theme === "auto") r.removeAttribute("data-theme");
+        else r.setAttribute("data-theme", settings.theme);
+        setTimeout(() => window.__scene && window.__scene.recolor(), 30);
+      }
+      $("#themeBtn").onclick = () => {
+        const dark =
+          settings.theme === "dark" ||
+          (settings.theme === "auto" &&
+            matchMedia("(prefers-color-scheme: dark)").matches);
+        settings.theme = dark ? "light" : "dark";
+        saveSettings();
+        applyTheme();
+      };
+      matchMedia("(prefers-color-scheme: dark)").addEventListener(
+        "change",
+        () => setTimeout(() => window.__scene && window.__scene.recolor(), 30),
+      );
+
+      /* ============ 3D science + maths scene ============ */
+      (function () {
+        if (typeof THREE === "undefined") {
+          return;
+        }
+        const canvas = $("#scene");
+        const renderer = new THREE.WebGLRenderer({
+          canvas,
+          alpha: true,
+          antialias: true,
+        });
+        renderer.setPixelRatio(Math.min(devicePixelRatio, 2));
+        const scene = new THREE.Scene();
+        const camera = new THREE.PerspectiveCamera(50, 1, 0.1, 200);
+        camera.position.set(0, 0, 18);
+        const root = new THREE.Group();
+        scene.add(root);
+
+        const matA = new THREE.MeshBasicMaterial({
+          color: 0x7c8cff,
+          wireframe: true,
+          transparent: true,
+          opacity: 0.5,
+        });
+        const matB = new THREE.MeshBasicMaterial({ color: 0xffb454 });
+        const lineA = new THREE.LineBasicMaterial({
+          color: 0x7c8cff,
+          transparent: true,
+          opacity: 0.55,
+        });
+        const ptsA = new THREE.PointsMaterial({
+          color: 0x7c8cff,
+          size: 0.09,
+          transparent: true,
+          opacity: 0.7,
+        });
+
+        // ---- science group ----
+        const sci = new THREE.Group();
+        root.add(sci);
+        const atom = new THREE.Group();
+        atom.position.set(-9, 3.5, -5);
+        sci.add(atom);
+        const nuc = new THREE.Group();
+        atom.add(nuc);
+        for (let i = 0; i < 7; i++) {
+          const m = new THREE.Mesh(
+            new THREE.SphereGeometry(0.42, 14, 14),
+            i % 2 ? matB : new THREE.MeshBasicMaterial({ color: 0xff6b81 }),
+          );
+          m.position.set(
+            (Math.random() - 0.5) * 0.7,
+            (Math.random() - 0.5) * 0.7,
+            (Math.random() - 0.5) * 0.7,
+          );
+          nuc.add(m);
+        }
+        const orbits = [];
+        [
+          [0, 0],
+          [Math.PI / 3, 0],
+          [-Math.PI / 3, 0],
+        ].forEach(([rx, ry], i) => {
+          const g = new THREE.Group();
+          g.rotation.set(rx, ry, i * 1.1);
+          const ring = new THREE.Mesh(
+            new THREE.TorusGeometry(3.2, 0.02, 6, 90),
+            lineA.clone(),
+          );
+          ring.material = new THREE.MeshBasicMaterial({
+            color: 0x7c8cff,
+            transparent: true,
+            opacity: 0.5,
+          });
+          g.add(ring);
+          const e = new THREE.Mesh(new THREE.SphereGeometry(0.2, 12, 12), matB);
+          g.add(e);
+          orbits.push({ e, sp: 1.1 + i * 0.4, ph: i * 2 });
+          atom.add(g);
+        });
+        const dna = new THREE.Group();
+        dna.position.set(12, -1, -7);
+        sci.add(dna);
+        const strandMatB = new THREE.MeshBasicMaterial({ color: 0xff6b81 });
+        for (let i = 0; i < 40; i++) {
+          const y = (i - 20) * 0.34,
+            a = i * 0.45;
+          const s1 = new THREE.Mesh(new THREE.SphereGeometry(0.14, 8, 8), matB),
+            s2 = new THREE.Mesh(
+              new THREE.SphereGeometry(0.14, 8, 8),
+              strandMatB,
+            );
+          s1.position.set(Math.cos(a) * 1.6, y, Math.sin(a) * 1.6);
+          s2.position.set(
+            Math.cos(a + Math.PI) * 1.6,
+            y,
+            Math.sin(a + Math.PI) * 1.6,
+          );
+          const g = new THREE.BufferGeometry().setFromPoints([
+            s1.position,
+            s2.position,
+          ]);
+          dna.add(s1, s2, new THREE.Line(g, lineA));
+        }
+
+        // ---- maths group ----
+        const mth = new THREE.Group();
+        root.add(mth);
+        const ico = new THREE.Mesh(new THREE.IcosahedronGeometry(2.4, 0), matA);
+        ico.position.set(-11, -3.5, -6);
+        mth.add(ico);
+        const knot = new THREE.Mesh(
+          new THREE.TorusKnotGeometry(1.6, 0.45, 120, 14, 2, 3),
+          matA,
+        );
+        knot.position.set(8.5, 4.5, -8);
+        mth.add(knot);
+        const dod = new THREE.Mesh(
+          new THREE.DodecahedronGeometry(1.5, 0),
+          matA,
+        );
+        dod.position.set(-4, 6.5, -10);
+        mth.add(dod);
+        // sine surface
+        const N = 44,
+          pos = new Float32Array(N * N * 3);
+        const surf = new THREE.Points(new THREE.BufferGeometry(), ptsA);
+        surf.geometry.setAttribute(
+          "position",
+          new THREE.BufferAttribute(pos, 3),
+        );
+        surf.position.set(0, -8.5, -8);
+        surf.rotation.x = 0.25;
+        mth.add(surf);
+        // axes
+        const ax = new THREE.Group();
+        ax.position.set(11, -5.5, -4);
+        [
+          [1, 0, 0],
+          [0, 1, 0],
+          [0, 0, 1],
+        ].forEach((v) => {
+          ax.add(
+            new THREE.Line(
+              new THREE.BufferGeometry().setFromPoints([
+                new THREE.Vector3(-v[0] * 2, -v[1] * 2, -v[2] * 2),
+                new THREE.Vector3(v[0] * 2, v[1] * 2, v[2] * 2),
+              ]),
+              lineA,
+            ),
+          );
+        });
+        mth.add(ax);
+
+        // ---- floating symbols ----
+        const SCI = [
+          "H₂O",
+          "E=mc²",
+          "⚛",
+          "DNA",
+          "F=ma",
+          "CO₂",
+          "λ",
+          "Na⁺",
+          "v=u+at",
+          "pH",
+        ];
+        const MTH = [
+          "π",
+          "∑",
+          "∫",
+          "√",
+          "x²+y²=r²",
+          "∞",
+          "sin θ",
+          "Δ",
+          "a²+b²=c²",
+          "n!",
+        ];
+        const syms = [];
+        function sprite(text, kind) {
+          const c = document.createElement("canvas");
+          c.width = 256;
+          c.height = 128;
+          const x = c.getContext("2d");
+          x.font = "700 64px Georgia, serif";
+          x.textAlign = "center";
+          x.textBaseline = "middle";
+          x.fillStyle = "#fff";
+          x.fillText(text, 128, 64);
+          const t = new THREE.CanvasTexture(c);
+          const m = new THREE.SpriteMaterial({
+            map: t,
+            transparent: true,
+            opacity: 0.28,
+            depthWrite: false,
+          });
+          const s = new THREE.Sprite(m);
+          s.scale.set(3.4, 1.7, 1);
+          s.userData = { kind, vy: 0.12 + Math.random() * 0.18, x0: 0 };
+          return s;
+        }
+        [
+          [SCI, "science"],
+          [MTH, "math"],
+        ].forEach(([arr, k]) =>
+          arr.forEach((t) => {
+            const s = sprite(t, k);
+            s.position.set(
+              (Math.random() - 0.5) * 34,
+              (Math.random() - 0.5) * 20,
+              -3 - Math.random() * 10,
+            );
+            s.userData.x0 = s.position.x;
+            s.userData.ph = Math.random() * 6;
+            scene.add(s);
+            syms.push(s);
+          }),
+        );
+
+        // ---- stars ----
+        const sg = new THREE.BufferGeometry(),
+          sp = new Float32Array(600 * 3);
+        for (let i = 0; i < 600; i++) {
+          sp[i * 3] = (Math.random() - 0.5) * 90;
+          sp[i * 3 + 1] = (Math.random() - 0.5) * 60;
+          sp[i * 3 + 2] = -10 - Math.random() * 40;
+        }
+        sg.setAttribute("position", new THREE.BufferAttribute(sp, 3));
+        const stars = new THREE.Points(
+          sg,
+          new THREE.PointsMaterial({
+            color: 0x9aa6ff,
+            size: 0.12,
+            transparent: true,
+            opacity: 0.55,
+          }),
+        );
+        scene.add(stars);
+
+        // ---- control ----
+        let speed = 1,
+          targetSpeed = 1,
+          kind = "both",
+          mx = 0,
+          my = 0;
+        function setKind(k) {
+          kind = k;
+          sci.visible = k !== "math";
+          mth.visible = k !== "science";
+          syms.forEach(
+            (s) => (s.visible = k === "both" || s.userData.kind === k),
+          );
+        }
+        function recolor() {
+          const cs = getComputedStyle(document.documentElement);
+          const a = new THREE.Color(cs.getPropertyValue("--scene-a").trim()),
+            b = new THREE.Color(cs.getPropertyValue("--scene-b").trim());
+          [matA.color, lineA.color, ptsA.color, stars.material.color].forEach(
+            (c) => c.copy(a),
+          );
+          matB.color.copy(b);
+          const light =
+            document.documentElement.dataset.theme === "light" ||
+            (!document.documentElement.dataset.theme &&
+              !matchMedia("(prefers-color-scheme: dark)").matches);
+          syms.forEach((s) => {
+            s.material.color.set(light ? 0x1b2160 : 0xffffff);
+            s.material.opacity = light ? 0.22 : 0.28;
+          });
+          stars.material.opacity = light ? 0.25 : 0.55;
+        }
+        function setMode(isFocus, running) {
+          targetSpeed = running ? (isFocus ? 0.55 : 1.6) : 1;
+        }
+        window.__scene = { setKind, recolor, setMode };
+
+        function resize() {
+          const w = innerWidth,
+            h = innerHeight;
+          renderer.setSize(w, h, false);
+          camera.aspect = w / h;
+          camera.updateProjectionMatrix();
+          root.scale.setScalar(Math.min(1, Math.max(0.55, w / h / 1.5)));
+        }
+        addEventListener("resize", resize);
+        resize();
+        addEventListener("pointermove", (e) => {
+          mx = (e.clientX / innerWidth - 0.5) * 2;
+          my = (e.clientY / innerHeight - 0.5) * 2;
+        });
+
+        let t = 0,
+          last = performance.now(),
+          visible = true;
+        document.addEventListener("visibilitychange", () => {
+          visible = !document.hidden;
+          last = performance.now();
+          if (visible) loop();
+        });
+        function frame() {
+          const now = performance.now(),
+            dt = Math.min(0.05, (now - last) / 1000);
+          last = now;
+          speed += (targetSpeed - speed) * 0.03;
+          t += dt * speed * (reduceMotion ? 0.15 : 1);
+          nuc.rotation.y = t * 0.8;
+          nuc.rotation.x = t * 0.5;
+          orbits.forEach((o) => {
+            const a = t * o.sp * 2 + o.ph;
+            o.e.position.set(Math.cos(a) * 3.2, Math.sin(a) * 3.2, 0);
+          });
+          atom.rotation.y = t * 0.25;
+          dna.rotation.y = t * 0.7;
+          ico.rotation.x = t * 0.4;
+          ico.rotation.y = t * 0.6;
+          knot.rotation.x = t * 0.3;
+          knot.rotation.y = t * 0.45;
+          dod.rotation.y = t * 0.5;
+          dod.rotation.z = t * 0.3;
+          ax.rotation.y = t * 0.5;
+          ax.rotation.x = 0.4;
+          const arr = surf.geometry.attributes.position.array;
+          let k = 0;
+          for (let i = 0; i < N; i++)
+            for (let j = 0; j < N; j++) {
+              const x = (i - N / 2) * 0.8,
+                z = (j - N / 2) * 0.5;
+              arr[k++] = x;
+              arr[k++] =
+                Math.sin(x * 0.45 + t * 1.5) * Math.cos(z * 0.9 + t) * 1.1;
+              arr[k++] = z;
+            }
+          surf.geometry.attributes.position.needsUpdate = true;
+          syms.forEach((s) => {
+            if (!s.visible) return;
+            s.position.y += s.userData.vy * dt * speed;
+            s.position.x =
+              s.userData.x0 + Math.sin(t * 0.6 + s.userData.ph) * 0.8;
+            if (s.position.y > 11) {
+              s.position.y = -11;
+            }
+          });
+          stars.rotation.z = t * 0.01;
+          camera.position.x += (mx * 1.6 - camera.position.x) * 0.04;
+          camera.position.y += (-my * 1.0 - camera.position.y) * 0.04;
+          camera.lookAt(0, 0, 0);
+          renderer.render(scene, camera);
+        }
+        function loop() {
+          if (!visible) return;
+          frame();
+          requestAnimationFrame(loop);
+        }
+        recolor();
+        setKind(settings.scene);
+        loop();
+      })();
+
+      /* ============ Init ============ */
+      applyTheme();
+      renderSettings();
+      render();
+      renderStats();
+      applyScene();
+    </script>
   </body>
 </html>
